@@ -39,7 +39,7 @@ This document defines the **minimum set of features** that every LEAF spec imple
 
 **Test Criteria:**
 - Can create new user account
-- Cannot register duplicate email/username
+- Cannot register duplicate email
 - Can log in with valid credentials
 - Receive JWT or equivalent token
 - Token works for authenticated endpoints
@@ -48,7 +48,7 @@ This document defines the **minimum set of features** that every LEAF spec imple
 
 **Requirements:**
 - View current user profile
-- Update username and preferences
+- Update display name and preferences
 - Track basic usage metrics (document count, token usage)
 
 **API Endpoints:**

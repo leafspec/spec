@@ -77,7 +77,7 @@ This document defines the **frontend requirements** for LEAF spec implementation
 
 **Elements:**
 - App logo/name
-- Current user indicator (username or avatar)
+- Current user indicator (display name, email, or avatar)
 - Primary navigation (Documents, Conversations, Search)
 - User menu (Profile, Settings, Logout)
 
@@ -499,7 +499,7 @@ Sources:
 - Memory/Facts section (display learned facts)
 
 **Behavior:**
-- Edit username
+- Edit display name
 - View usage metrics
 - See what system remembers about user
 

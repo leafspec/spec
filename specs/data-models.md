@@ -36,7 +36,7 @@ Represents a user account in the system.
 {
   "id": "string (unique identifier)",
   "email": "string (valid email, unique)",
-  "username": "string (3-30 characters, unique)",
+  "displayName": "string (optional, defaults to email)",
   "passwordHash": "string (never exposed in API responses)",
   "preferences": {
     "defaultDocumentScope": "string (enum: all|recent|tagged)",
@@ -59,7 +59,7 @@ Represents a user account in the system.
 **Field Requirements:**
 - `id` - Required, unique, immutable
 - `email` - Required, unique, valid email format
-- `username` - Required, unique, 3-30 characters, alphanumeric + underscore/dash
+- `displayName` - Optional, defaults to email if not provided
 - `passwordHash` - Required for storage, never returned in API responses
 - `preferences` - Optional, defaults to system defaults
 - `memory.facts` - Optional, empty array by default
@@ -72,7 +72,7 @@ Represents a user account in the system.
 {
   "id": "usr_a8f3c92b",
   "email": "alice@example.com",
-  "username": "alice",
+  "displayName": "Alice",
   "preferences": {
     "defaultDocumentScope": "all",
     "summaryLength": "medium",

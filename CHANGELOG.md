@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed (2026-01-17)
 
+#### User Model Simplification
+
+- **Replaced `username` with optional `displayName`** - The required unique username field has been replaced with an optional `displayName` field that defaults to the user's email if not provided. This simplifies authentication flows while still allowing implementations to show friendly names in the UI.
+
+Affected specs:
+- `api-specification.md` - Registration, login, and user profile endpoints
+- `data-models.md` - User model definition
+- `required-features.md` - Registration validation rules
+- `test-suite.md` - Auth test cases
+- `ui-requirements.md` - User display references
+
 #### API Specification - Framework Agnosticism Improvements
 
 - **Added "Processing Status" section** - Explicitly documents acceptable approaches for async status notification:

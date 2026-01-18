@@ -48,7 +48,7 @@ Register a new user account.
 {
   "email": "user@example.com",
   "password": "securepassword",
-  "username": "johndoe"
+  "displayName": "John Doe"  // optional
 }
 ```
 
@@ -58,7 +58,7 @@ Register a new user account.
   "user": {
     "id": "usr_123abc",
     "email": "user@example.com",
-    "username": "johndoe",
+    "displayName": "John Doe",  // or email if not provided
     "createdAt": "2024-01-15T10:00:00Z"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -83,7 +83,7 @@ Authenticate an existing user.
   "user": {
     "id": "usr_123abc",
     "email": "user@example.com",
-    "username": "johndoe"
+    "displayName": "John Doe"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
@@ -750,7 +750,7 @@ Get current user profile and preferences.
   "user": {
     "id": "usr_123abc",
     "email": "user@example.com",
-    "username": "johndoe",
+    "displayName": "John Doe",
     "preferences": {
       "defaultDocumentScope": "all",
       "summaryLength": "medium",
@@ -781,7 +781,7 @@ Update user profile and preferences.
 **Request Body:**
 ```json
 {
-  "username": "newusername",
+  "displayName": "New Name",
   "preferences": {
     "defaultDocumentScope": "recent",
     "summaryLength": "short"
@@ -794,7 +794,7 @@ Update user profile and preferences.
 {
   "user": {
     "id": "usr_123abc",
-    "username": "newusername",
+    "displayName": "New Name",
     "preferences": {
       "defaultDocumentScope": "recent",
       "summaryLength": "short",

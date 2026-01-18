@@ -33,12 +33,12 @@ POST /api/auth/register
 Body: {
   "email": "test@example.com",
   "password": "SecurePass123!",
-  "username": "testuser"
+  "displayName": "Test User"  // optional
 }
 
 Expected:
 - Status: 201
-- Response includes: user.id, user.email, user.username, token
+- Response includes: user.id, user.email, user.displayName, token
 - Token is valid JWT or equivalent
 - Password NOT in response
 ```
@@ -50,7 +50,7 @@ POST /api/auth/register (with same email)
 Expected:
 - Status: 400 or 409
 - Error code: CONFLICT or VALIDATION_ERROR
-- Message indicates duplicate email/username
+- Message indicates duplicate email
 ```
 
 #### Test: User Login
