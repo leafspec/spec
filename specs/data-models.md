@@ -1,7 +1,7 @@
 ---
 title: Data Models
 version: 1.0.0-draft
-last_updated: 2026-01-11
+last_updated: 2026-01-17
 status: Draft
 category: Data Schema
 ---
@@ -219,6 +219,7 @@ Represents a single message in a conversation.
   "conversationId": "string (foreign key to Conversation.id)",
   "role": "string (enum: user|assistant|system)",
   "content": "string (message text)",
+  "reasoning": "string (optional, AI reasoning/thinking process)",
   "citations": ["Citation (optional, only for assistant messages)"],
   "relatedDocuments": ["string (array of Document.id, optional)"],
   "tokenUsage": "TokenUsage (optional, only for assistant messages)",
@@ -231,10 +232,13 @@ Represents a single message in a conversation.
 - `conversationId` - Required, must reference valid Conversation
 - `role` - Required, one of: `user`, `assistant`, `system`
 - `content` - Required, message text (markdown supported)
+- `reasoning` - Optional, AI reasoning/thinking process (assistant only). See note below.
 - `citations` - Optional, array of Citation objects (assistant only)
 - `relatedDocuments` - Optional, suggested related documents
 - `tokenUsage` - Optional, token metrics (assistant only)
 - `createdAt` - Required, immutable
+
+> **Reasoning Field:** Implementations MAY store the AI's reasoning/thinking process separately from the final response content. This enables UI patterns like "Thought Accordion" where reasoning can be shown collapsed or hidden. Support depends on the underlying LLM's capabilities (e.g., OpenAI o1, Claude with extended thinking). Implementations without reasoning support simply omit this field.
 
 **Role Descriptions:**
 - `user` - Message from the user
@@ -276,6 +280,33 @@ Represents a single message in a conversation.
     "total": 1570
   },
   "createdAt": "2024-01-14T09:15:05Z"
+}
+```
+
+**Example (Assistant Message with Reasoning):**
+```json
+{
+  "id": "msg_3c4d5e6f",
+  "conversationId": "conv_9d4c3f2a",
+  "role": "assistant",
+  "reasoning": "The user is asking about neural network components. Let me search the uploaded documents... Found 3 relevant chunks in 'Neural Networks Fundamentals'. Chunk 42 on page 12 has the most direct answer about architecture layers.",
+  "content": "Based on your documents, the main components of a neural network are:\n\n1. **Input Layer** - Receives the initial data\n2. **Hidden Layers** - Process information through weighted connections\n3. **Output Layer** - Produces the final prediction",
+  "citations": [
+    {
+      "documentId": "doc_b7e2f91a",
+      "documentTitle": "Neural Networks Fundamentals",
+      "chunkId": "chunk_42",
+      "excerpt": "A neural network consists of an input layer, one or more hidden layers, and an output layer...",
+      "relevanceScore": 0.94,
+      "page": 12
+    }
+  ],
+  "tokenUsage": {
+    "prompt": 1450,
+    "completion": 180,
+    "total": 1630
+  },
+  "createdAt": "2024-01-14T09:20:05Z"
 }
 ```
 

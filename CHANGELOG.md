@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-draft] - 2026-01-17
+
+### Changed (2026-01-17)
+
+#### API Specification - Framework Agnosticism Improvements
+
+- **Added "Processing Status" section** - Explicitly documents acceptable approaches for async status notification:
+  - Polling (check document status endpoint)
+  - Webhooks (callback URL)
+  - Real-time subscriptions (WebSocket, SSE, or framework-native like Convex)
+
+- **Clarified streaming flexibility** - Streaming requirement is now "token-by-token delivery with inline citation metadata" rather than mandating SSE specifically. WebSockets and framework-native mechanisms are equally acceptable.
+
+- **Added file upload flexibility** - Documented that implementations may use any upload pattern:
+  - Direct multipart upload
+  - Presigned URL upload
+  - Framework-specific patterns (Convex, Firebase, etc.)
+
+- **Updated frontend streaming requirement** - Changed from "must support SSE or WebSocket" to "must support the implementation's streaming mechanism"
+
+These changes improve framework agnosticism, particularly for reactive frameworks like Convex where subscriptions are more natural than polling.
+
+#### Optional Reasoning Support (Thought Accordion)
+
+- **Added optional reasoning SSE events** to API specification:
+  - `reasoning_start` - Reasoning/thinking phase started
+  - `reasoning_delta` - Incremental reasoning chunk
+  - `reasoning_end` - Reasoning complete, response follows
+
+- **Added optional `reasoning` field** to Message data model for storing AI reasoning/thinking process separately from response content
+
+- Enables "Thought Accordion" UI pattern where reasoning can be shown collapsed/hidden
+
+- Explicitly marked as optional — support depends on underlying LLM capabilities (OpenAI o1, Claude extended thinking, etc.)
+
+---
+
 ## [1.0.0-draft] - 2026-01-11
 
 ### Initial Draft Release - LEAF Specification
@@ -87,7 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - Planned for v1.0.0
 
 ### Coming Soon
-- [ ] Reference implementation (Next.js + Vercel AI SDK + Supabase)
+- [ ] Reference implementation (Next.js + Convex)
 - [ ] Automated test suite
 - [ ] Implementation guide
 - [ ] Live demo deployment

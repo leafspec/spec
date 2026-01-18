@@ -1,7 +1,7 @@
 ---
 title: API Specification
 version: 1.0.0-draft
-last_updated: 2026-01-11
+last_updated: 2026-01-17
 status: Draft
 category: API Contract
 ---
@@ -253,6 +253,41 @@ Delete a document and all associated embeddings.
 **Auth Required:** Yes
 
 **Response:** `204 No Content`
+
+### Processing Status
+
+Documents undergo asynchronous processing after upload (parsing, chunking, embedding). Implementations MUST provide a way for clients to determine when processing completes.
+
+**Acceptable Approaches:**
+
+1. **Polling** — Client periodically calls `GET /api/documents/:id` and checks the `status` field
+2. **Webhooks** — Implementation accepts a callback URL and POSTs status updates
+3. **Real-time Subscriptions** — WebSocket, SSE, or framework-native subscriptions (e.g., Convex reactive queries, Firebase listeners)
+
+**Status Values:**
+- `processing` — Document is being parsed, chunked, and embedded
+- `ready` — Document is fully processed and available for queries
+- `failed` — Processing failed (check `error` field for details)
+
+**Example (Polling):**
+```
+GET /api/documents/doc_456def
+→ { "status": "processing" }
+
+# Wait, then retry...
+
+GET /api/documents/doc_456def
+→ { "status": "ready", "chunkCount": 23 }
+```
+
+**Example (Subscription - conceptual):**
+```javascript
+// Framework-native subscription (Convex example)
+const document = useQuery(api.documents.get, { id: documentId });
+// `document.status` updates automatically when processing completes
+```
+
+> **Note:** The spec does not prescribe which approach to use. Implementations should choose based on their technology stack. Frontends should support at minimum polling, with real-time updates as an enhancement.
 
 ---
 
@@ -515,6 +550,46 @@ data: {}
 - `message_end` - Message complete with metadata
 - `error` - Error occurred
 - `done` - Stream complete
+
+**Optional Reasoning Events:**
+
+Implementations MAY stream AI reasoning/thinking separately from the final response. This enables UI patterns like "Thought Accordion" where reasoning is shown collapsed or hidden.
+
+- `reasoning_start` - Reasoning/thinking phase started
+- `reasoning_delta` - Incremental reasoning chunk
+- `reasoning_end` - Reasoning complete, response content follows
+
+**Example (with reasoning):**
+```
+event: message_start
+data: {"messageId":"msg_004","conversationId":"conv_abc123"}
+
+event: reasoning_start
+data: {}
+
+event: reasoning_delta
+data: {"delta":"Let me search the documents for information about neural networks..."}
+
+event: reasoning_delta
+data: {"delta":" I found 3 relevant chunks discussing layer architecture."}
+
+event: reasoning_end
+data: {}
+
+event: content_delta
+data: {"delta":"Based on your documents, neural networks are..."}
+
+event: citations
+data: {"citations":[...]}
+
+event: message_end
+data: {"messageId":"msg_004","tokenUsage":{...},"finishReason":"stop"}
+
+event: done
+data: {}
+```
+
+> **Note:** Reasoning support depends on the underlying LLM's capabilities. Models like OpenAI o1, Claude with extended thinking, or custom chains may expose reasoning; others may not. Implementations without reasoning support simply omit these events.
 
 ---
 
@@ -919,15 +994,22 @@ When rate limit is exceeded, the API returns `429 Too Many Requests`:
 
 4. **Vector Database** - Any vector store that supports similarity search (Pinecone, Weaviate, pgvector, Chroma, etc.).
 
-5. **Streaming** - SSE (Server-Sent Events) is recommended for broader compatibility, but WebSockets are acceptable.
+5. **Streaming** - SSE (Server-Sent Events) is recommended for broader compatibility, but WebSockets or framework-native streaming mechanisms are equally acceptable. The requirement is token-by-token delivery with inline citation metadata — not a specific transport protocol.
 
 6. **Authentication** - JWT is recommended but any secure token-based auth is acceptable.
 
 7. **Storage** - Document files can be stored in any blob storage (S3, local filesystem, etc.).
 
+8. **File Upload** - The API examples show direct multipart upload, but implementations may use any upload pattern:
+   - Direct multipart upload to API endpoint
+   - Presigned URL upload (client uploads to storage, then notifies API)
+   - Framework-specific patterns (e.g., Convex `generateUploadUrl()`, Firebase Storage)
+
+   The API contract focuses on the *result* (document created with processing status) not the upload mechanism.
+
 **For Frontend Implementers:**
 
-1. **Handle Streaming** - Must support SSE or WebSocket streaming for real-time responses.
+1. **Handle Streaming** - Must support the implementation's streaming mechanism (SSE, WebSocket, or framework-native) for real-time responses.
 
 2. **Citations UI** - Must display citations with clickable links to source documents.
 
